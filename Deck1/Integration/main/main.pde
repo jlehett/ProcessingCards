@@ -10,7 +10,6 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
 
     // Box parameters
     float boxRadius = 35.0;
-    float boxSpacing = 5.0;
     float rotationNoise = 0.8;
     float numBoxesX = 10;
     float numBoxesY = 17;
@@ -23,8 +22,8 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
     face.rectMode(CENTER);
     for (float x = 0; x < numBoxesX; x++) {
         for (float y = 0; y < numBoxesY; y++) {
-            float boxX = map(x, 0, 9, boxRadius, cardWidth-boxRadius);
-            float boxY = map(y, 0, 16, boxRadius, cardHeight-boxRadius);
+            float boxX = map(x, 0, numBoxesX-1, boxRadius, cardWidth-boxRadius);
+            float boxY = map(y, 0, numBoxesY-1, boxRadius, cardHeight-boxRadius);
             float rotation = map(
                 noise(x*rotationNoise, y*rotationNoise),
                 0, 1, -HALF_PI/2.0, HALF_PI/2.0
