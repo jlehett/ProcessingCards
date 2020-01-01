@@ -10,6 +10,8 @@ color wallpaperBorder = #ffffff;
 PGraphics drawWallpaperPattern(int patternWidth, int patternHeight) {
     // More pattern parameters
     float lineExtension = 0.25;
+    float petalWidth = 0.15;
+    float petalHeight = 0.45;
 
     // Create PGraphics object
     PGraphics pattern = createGraphics(patternWidth, patternHeight, P2D);
@@ -21,43 +23,26 @@ PGraphics drawWallpaperPattern(int patternWidth, int patternHeight) {
     pattern.fill(wallpaperBG);
     pattern.rect(-1, -1, patternWidth+1, patternHeight+1);
 
-    pattern.noFill();
-    pattern.strokeWeight(5);
-    pattern.stroke(wallpaperFG);
+    pattern.noStroke();
+    pattern.fill(wallpaperFG);
 
-    pattern.line(0, 0, patternWidth, patternHeight);
-    pattern.line(patternWidth, 0, 0, patternHeight);
-    pattern.line(0, 0, 0, lineExtension*patternHeight);
-    pattern.line(0, 0, lineExtension*patternWidth, 0);
-    pattern.line(0, patternHeight, 0, patternHeight-lineExtension*patternHeight);
-    pattern.line(0, patternHeight, patternWidth*lineExtension, patternHeight);
-    pattern.line(patternWidth, patternHeight, patternWidth-patternWidth*lineExtension, patternHeight);
-    pattern.line(patternWidth, patternHeight, patternWidth, patternHeight-patternHeight*lineExtension);
-    pattern.line(patternWidth, 0, patternWidth, patternHeight*lineExtension);
-    pattern.line(patternWidth, 0, patternWidth-patternWidth*lineExtension, 0);
+    pattern.translate(patternWidth/2, patternHeight/2);
+    
+    for (int i = 0; i < 8; i++) {
+        pattern.rotate(HALF_PI/2.0);
+        pattern.ellipse(
+            0, patternHeight*petalHeight/2, 
+            petalWidth*patternWidth, petalHeight*patternHeight
+        );
+    }
 
     pattern.endDraw();
 
-    PGraphics mask = createGraphics(patternWidth, patternHeight, P2D);
-    mask.beginDraw();
-    mask.noStroke();
-    mask.fill(255);
-    mask.rect(0, 0, patternWidth, patternHeight);
-    mask.fill(0);
-    mask.ellipse(patternWidth/2, patternHeight/2, 20, 20);
-    mask.endDraw();
-
-    PGraphics output = createGraphics(patternWidth, patternHeight, P2D);
-    output.beginDraw();
-    output.image(pattern, 0, 0);
-    output.mask(mask);
-    output.endDraw();
-
-    return output;
+    return pattern;
 }
 
-// Template function for drawing
-PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
+// Function to draw wallpaper with cutout
+PGraphics drawWallpaper(int cardWidth, int cardHeight) {
     // Pattern parameters
     int patternWidth = 30;
     int patternHeight = 30;
@@ -67,7 +52,7 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
     // Cutout parameters
     float cutoutHeightLeft = random(0.1, 0.9);
     float cutoutHeightRight = random(0.1, 0.9);
-    float cutoutWidth = random(5, 30);
+    float cutoutWidth = random(0, 30);
     float flip = random(0, 1);
 
     // Generate the pattern to be used on the wallpaper
@@ -144,6 +129,14 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
     wallpaperFinal.mask(wallpaperCutout);
 
     wallpaperFinal.endDraw();
+
+    return wallpaperFinal;
+}
+
+// Template function for drawing
+PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
+    // Generate the wallpaper
+    PGraphics wallpaper = drawWallpaper(cardWidth, cardHeight);
     
     // Generate the final card face
     PGraphics face = createGraphics(cardWidth, cardHeight, P2D);
@@ -154,7 +147,7 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
     face.rect(0, 0, cardWidth, cardHeight);
 
     // Blit the final wallpaper product to the card face
-    face.image(wallpaperFinal, 0, 0);
+    face.image(wallpaper, 0, 0);
 
     face.endDraw();
     return face;
