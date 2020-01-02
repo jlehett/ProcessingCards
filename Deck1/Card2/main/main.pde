@@ -1,8 +1,8 @@
 // Parameters
 color bg = #05386b;
-color wallpaperBG = #05386b;
+color wallpaperBG = color(248, 246, 230);
 color bgCard = #191919;
-color wallpaperFG = #379683;
+color wallpaperFG = color(167, 193, 200);
 color wallpaperBorder = #ffffff;
 
 
@@ -11,7 +11,8 @@ PGraphics drawWallpaperPattern(int patternWidth, int patternHeight) {
     // More pattern parameters
     float lineExtension = 0.25;
     float petalWidth = 0.15;
-    float petalHeight = 0.45;
+    float petalHeight = 0.35;
+    float petalHeightOffset = 0.1;
 
     // Create PGraphics object
     PGraphics pattern = createGraphics(patternWidth, patternHeight, P2D);
@@ -31,7 +32,7 @@ PGraphics drawWallpaperPattern(int patternWidth, int patternHeight) {
     for (int i = 0; i < 8; i++) {
         pattern.rotate(HALF_PI/2.0);
         pattern.ellipse(
-            0, patternHeight*petalHeight/2, 
+            0, patternHeight*petalHeight/2+petalHeightOffset*patternHeight, 
             petalWidth*patternWidth, petalHeight*patternHeight
         );
     }
@@ -44,9 +45,9 @@ PGraphics drawWallpaperPattern(int patternWidth, int patternHeight) {
 // Function to draw wallpaper with cutout
 PGraphics drawWallpaper(int cardWidth, int cardHeight) {
     // Pattern parameters
-    int patternWidth = 30;
-    int patternHeight = 30;
-    int numPatternsX = int(27/2.5);
+    int patternWidth = 45;
+    int patternHeight = 45;
+    int numPatternsX = int(27/3.5);
     int numPatternsY = int(43/2.5);
 
     // Cutout parameters
@@ -70,9 +71,14 @@ PGraphics drawWallpaper(int cardWidth, int cardHeight) {
     wallpaper.imageMode(CENTER);
     for (int x = 0; x < numPatternsX; x++) {
         for (int y = 0; y < numPatternsY; y++) {
-            float patternX = map(
-                x, 0, numPatternsX-1, 
-                patternWidth, cardWidth-patternWidth
+            float patternX = 0;
+            if (y % 2 == 0) patternX = map(
+                x, 0, numPatternsX-1,
+                0, cardWidth
+            );
+            else patternX = map(
+                x, 0, numPatternsX-1,
+                patternWidth, cardWidth+patternWidth
             );
             float patternY = map(
                 y, 0, numPatternsY-1, 
