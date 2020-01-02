@@ -5,38 +5,54 @@ color bgCard = #191919;
 color wallpaperFG = color(167, 193, 200);
 color wallpaperBorder = #ffffff;
 
+// Function to draw the wallpaper dividing pattern
+PGraphics drawWallpaperDividerPattern(int patternWidth, int patternHeight) {
+    // Wallpaper divider parameters
+    float dividerTop = random(0.45, 0.95);
+    float dividerBottom = random(0.45, 0.95);
+    float dividerLeft = random(0.45, 0.95);
+    float dividerRight = random(0.45, 0.95);
+    float dividerCurveout1 = random(0.05, 0.35);
+    float dividerCurveout2 = random(0.05, 0.35);
+    float dividerCurveout3 = random(0.05, 0.35);
+    float dividerCurveout4 = random(0.05, 0.35);
 
-// Function to draw wallpaper pattern
-PGraphics drawWallpaperPattern(int patternWidth, int patternHeight) {
-    // More pattern parameters
-    float lineExtension = 0.25;
-    float petalWidth = 0.15;
-    float petalHeight = 0.35;
-    float petalHeightOffset = 0.1;
-
-    // Create PGraphics object
+    // Create PGraphics obect
     PGraphics pattern = createGraphics(patternWidth, patternHeight, P2D);
     pattern.smooth(8);
 
     // Draw pattern
     pattern.beginDraw();
 
-    pattern.fill(wallpaperBG);
-    pattern.rect(-1, -1, patternWidth+1, patternHeight+1);
-
     pattern.noStroke();
     pattern.fill(wallpaperFG);
 
     pattern.translate(patternWidth/2, patternHeight/2);
+    pattern.beginShape();
     
-    for (int i = 0; i < 8; i++) {
-        pattern.rotate(HALF_PI/2.0);
-        pattern.ellipse(
-            0, patternHeight*petalHeight/2+petalHeightOffset*patternHeight, 
-            petalWidth*patternWidth, petalHeight*patternHeight
-        );
-    }
+    pattern.vertex(0, patternHeight/2*dividerTop);
+    pattern.bezierVertex(
+        patternWidth/2*dividerCurveout1, patternHeight/2*dividerCurveout1,
+        patternWidth/2*dividerCurveout1, patternHeight/2*dividerCurveout1,
+        patternWidth/2*dividerRight, 0
+    );
+    pattern.bezierVertex(
+        patternWidth/2*dividerCurveout2, -patternHeight/2*dividerCurveout2,
+        patternWidth/2*dividerCurveout2, -patternHeight/2*dividerCurveout2,
+        0, -patternHeight/2*dividerBottom
+    );
+    pattern.bezierVertex(
+        -patternWidth/2*dividerCurveout3, -patternHeight/2*dividerCurveout3,
+        -patternWidth/2*dividerCurveout3, -patternHeight/2*dividerCurveout3,
+        -patternWidth/2*dividerLeft, 0
+    );
+    pattern.bezierVertex(
+        -patternWidth/2*dividerCurveout4, patternHeight/2*dividerCurveout4,
+        -patternWidth/2*dividerCurveout4, patternHeight/2*dividerCurveout4,
+        0, patternHeight/2*dividerTop
+    );
 
+    pattern.endShape();
     pattern.endDraw();
 
     return pattern;
@@ -47,8 +63,21 @@ PGraphics drawWallpaper(int cardWidth, int cardHeight) {
     // Pattern parameters
     int patternWidth = 45;
     int patternHeight = 45;
-    int numPatternsX = int(27/3.5);
+    int numPatternsX = int(27/2.5);
     int numPatternsY = int(43/2.5);
+
+    // Pattern randomize parameters
+    float petalWidthMean = random(0.15, 0.25);
+    float petalWidthVariance = 0.025;
+    float petalHeightMean = random(0.25, 0.35);
+    float petalHeightVariance = 0.025;
+    float petalHeightOffsetMean = random(0.1, 0.2);
+    float petalHeightOffsetVariance = 0.05;
+
+    float dividerVertexMean = random(0.7, 0.8);
+    float dividerVertexVariance = 0.05;
+    float dividerCurveoutMean = random(0.22, 0.28);
+    float dividerCurveoutVariance = 0.02;
 
     // Cutout parameters
     float cutoutHeightLeft = random(0.1, 0.9);
@@ -56,8 +85,7 @@ PGraphics drawWallpaper(int cardWidth, int cardHeight) {
     float cutoutWidth = random(0, 30);
     float flip = random(0, 1);
 
-    // Generate the pattern to be used on the wallpaper
-    PGraphics pattern = drawWallpaperPattern(patternWidth, patternHeight);  
+    // Generate the patterns to be used on the wallpaper  
 
     // Generate the wallpaper
     PGraphics wallpaper = createGraphics(cardWidth, cardHeight, P2D);
@@ -71,20 +99,110 @@ PGraphics drawWallpaper(int cardWidth, int cardHeight) {
     wallpaper.imageMode(CENTER);
     for (int x = 0; x < numPatternsX; x++) {
         for (int y = 0; y < numPatternsY; y++) {
-            float patternX = 0;
-            if (y % 2 == 0) patternX = map(
+            float patternX = map(
                 x, 0, numPatternsX-1,
-                0, cardWidth
+                -patternWidth, cardWidth+patternWidth
             );
-            else patternX = map(
+            if (
+                y % 2 == 0 && x % 2 == 0 ||
+                y % 2 == 1 && x % 2 == 1
+                ) {
+                float patternY = map(
+                    y, 0, numPatternsY-1, 
+                    -patternHeight, cardHeight+patternHeight
+                );
+
+                // Generate the pattern to be used on the wallpaper
+                {
+                    // More pattern parameters
+                    float petalWidth = random(petalWidthMean-petalWidthVariance, petalWidthMean+petalWidthVariance);
+                    float petalHeight = random(petalHeightMean-petalHeightVariance, petalHeightMean+petalHeightVariance);
+                    float petalHeightOffset = random(petalHeightOffsetMean-petalHeightOffsetVariance, petalHeightOffsetMean+petalHeightOffsetVariance);
+
+                    // Draw pattern
+                    wallpaper.noStroke();
+                    wallpaper.fill(wallpaperFG);
+
+                    wallpaper.pushMatrix();
+                    wallpaper.translate(patternX, patternY);
+                
+                    for (int i = 0; i < 8; i++) {
+                        wallpaper.rotate(HALF_PI/2.0);
+                        wallpaper.ellipse(
+                            0, patternHeight*petalHeight/2+petalHeightOffset*patternHeight, 
+                            petalWidth*patternWidth, petalHeight*patternHeight
+                        );
+                    }
+
+                    wallpaper.popMatrix();
+                }
+            }
+        }
+    }
+
+    // Blit the divider pattern on the wallpaper
+    wallpaper.imageMode(CENTER);
+    for (int x = 0; x < numPatternsX; x++) {
+        for (int y = 0; y < numPatternsY; y++) {
+            float patternX = map(
                 x, 0, numPatternsX-1,
-                patternWidth, cardWidth+patternWidth
+                -patternWidth, cardWidth+patternWidth
             );
-            float patternY = map(
-                y, 0, numPatternsY-1, 
-                patternHeight, cardHeight-patternHeight
-            );
-            wallpaper.image(pattern, patternX, patternY);
+            if (
+                y % 2 == 0 && x % 2 == 1 ||
+                y % 2 == 1 && x % 2 == 0
+                ) {
+                float patternY = map(
+                    y, 0, numPatternsY-1, 
+                    -patternHeight, cardHeight+patternHeight
+                );
+
+                // Generate the pattern to be used in the wallpaper
+                {
+                    // Wallpaper divider parameters
+                    float dividerTop = random(dividerVertexMean-dividerVertexVariance, dividerVertexMean+dividerVertexVariance);
+                    float dividerBottom = random(dividerVertexMean-dividerVertexVariance, dividerVertexMean+dividerVertexVariance);
+                    float dividerLeft = random(dividerVertexMean-dividerVertexVariance, dividerVertexMean+dividerVertexVariance);
+                    float dividerRight = random(dividerVertexMean-dividerVertexVariance, dividerVertexMean+dividerVertexVariance);
+                    float dividerCurveout1 = random(dividerCurveoutMean-dividerCurveoutVariance, dividerCurveoutMean+dividerCurveoutVariance);
+                    float dividerCurveout2 = random(dividerCurveoutMean-dividerCurveoutVariance, dividerCurveoutMean+dividerCurveoutVariance);
+                    float dividerCurveout3 = random(dividerCurveoutMean-dividerCurveoutVariance, dividerCurveoutMean+dividerCurveoutVariance);
+                    float dividerCurveout4 = random(dividerCurveoutMean-dividerCurveoutVariance, dividerCurveoutMean+dividerCurveoutVariance);
+
+                    // Draw pattern
+                    wallpaper.noStroke();
+                    wallpaper.fill(wallpaperFG);
+
+                    wallpaper.pushMatrix();
+                    wallpaper.translate(patternX, patternY);
+                    wallpaper.beginShape();
+                    
+                    wallpaper.vertex(0, patternHeight/2*dividerTop);
+                    wallpaper.bezierVertex(
+                        patternWidth/2*dividerCurveout1, patternHeight/2*dividerCurveout1,
+                        patternWidth/2*dividerCurveout1, patternHeight/2*dividerCurveout1,
+                        patternWidth/2*dividerRight, 0
+                    );
+                    wallpaper.bezierVertex(
+                        patternWidth/2*dividerCurveout2, -patternHeight/2*dividerCurveout2,
+                        patternWidth/2*dividerCurveout2, -patternHeight/2*dividerCurveout2,
+                        0, -patternHeight/2*dividerBottom
+                    );
+                    wallpaper.bezierVertex(
+                        -patternWidth/2*dividerCurveout3, -patternHeight/2*dividerCurveout3,
+                        -patternWidth/2*dividerCurveout3, -patternHeight/2*dividerCurveout3,
+                        -patternWidth/2*dividerLeft, 0
+                    );
+                    wallpaper.bezierVertex(
+                        -patternWidth/2*dividerCurveout4, patternHeight/2*dividerCurveout4,
+                        -patternWidth/2*dividerCurveout4, patternHeight/2*dividerCurveout4,
+                        0, patternHeight/2*dividerTop
+                    );
+
+                    wallpaper.endShape();
+                    wallpaper.popMatrix();
+                }
+            }
         }
     }
 
