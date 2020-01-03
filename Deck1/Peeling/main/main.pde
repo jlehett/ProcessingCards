@@ -1,70 +1,81 @@
 // Parameters
-color bg = #05386b;
-color wallpaperBG = color(248, 246, 230);
-color bgCard = #191919;
-color wallpaperFG = color(167, 193, 200);
+color wallpaperBG = #6b022a;
+color wallpaperFG = #97bfba;
+color hexBG = #fcedf3;
+color hexFG = #32a899;
 color wallpaperBorder = #ffffff;
+color bg = #32a899;
 
-// Function to draw the wallpaper dividing pattern
-PGraphics drawWallpaperDividerPattern(int patternWidth, int patternHeight) {
-    // Wallpaper divider parameters
-    float dividerTop = random(0.45, 0.95);
-    float dividerBottom = random(0.45, 0.95);
-    float dividerLeft = random(0.45, 0.95);
-    float dividerRight = random(0.45, 0.95);
-    float dividerCurveout1 = random(0.05, 0.35);
-    float dividerCurveout2 = random(0.05, 0.35);
-    float dividerCurveout3 = random(0.05, 0.35);
-    float dividerCurveout4 = random(0.05, 0.35);
+// Function to draw the hex for the hex grid
+PGraphics drawHex(int patternWidth, int patternHeight) {
+    // Hex parameters
+    float strokeSize = 3;
+    float radius = patternWidth/2;
 
-    // Create PGraphics obect
-    PGraphics pattern = createGraphics(patternWidth, patternHeight, P2D);
-    pattern.smooth(8);
+    // Generate the PGraphics object
+    PGraphics hex = createGraphics(patternWidth*2, patternHeight*2, P2D);
+    hex.smooth(8);
+    hex.beginDraw();
 
-    // Draw pattern
-    pattern.beginDraw();
+    // Draw the hex
+    hex.noFill();
+    hex.stroke(hexFG);
+    hex.strokeWeight(strokeSize);
 
-    pattern.noStroke();
-    pattern.fill(wallpaperFG);
+    hex.translate(patternWidth/2, patternHeight/2);
+    hex.beginShape();
 
-    pattern.translate(patternWidth/2, patternHeight/2);
-    pattern.beginShape();
-    
-    pattern.vertex(0, patternHeight/2*dividerTop);
-    pattern.bezierVertex(
-        patternWidth/2*dividerCurveout1, patternHeight/2*dividerCurveout1,
-        patternWidth/2*dividerCurveout1, patternHeight/2*dividerCurveout1,
-        patternWidth/2*dividerRight, 0
-    );
-    pattern.bezierVertex(
-        patternWidth/2*dividerCurveout2, -patternHeight/2*dividerCurveout2,
-        patternWidth/2*dividerCurveout2, -patternHeight/2*dividerCurveout2,
-        0, -patternHeight/2*dividerBottom
-    );
-    pattern.bezierVertex(
-        -patternWidth/2*dividerCurveout3, -patternHeight/2*dividerCurveout3,
-        -patternWidth/2*dividerCurveout3, -patternHeight/2*dividerCurveout3,
-        -patternWidth/2*dividerLeft, 0
-    );
-    pattern.bezierVertex(
-        -patternWidth/2*dividerCurveout4, patternHeight/2*dividerCurveout4,
-        -patternWidth/2*dividerCurveout4, patternHeight/2*dividerCurveout4,
-        0, patternHeight/2*dividerTop
-    );
+    for (float a = PI/6; a < TWO_PI+TWO_PI/6; a += TWO_PI/6) {
+        hex.vertex(
+            cos(a) * radius,
+            sin(a) * radius
+        );
+    }
 
-    pattern.endShape();
-    pattern.endDraw();
+    hex.endShape();
+    hex.endDraw();
+    return hex;
+}
 
-    return pattern;
+// Function to draw the hex grid
+PGraphics drawHexGrid(int cardWidth, int cardHeight) {
+    // Hex Grid parameters
+    int patternWidth = 80;
+    int patternHeight = 80;
+
+    // Generate the base hex
+    PGraphics hex = drawHex(patternWidth, patternHeight);
+
+    // Generate the grid
+    PGraphics grid = createGraphics(cardWidth, cardHeight, P2D);
+    grid.smooth(8);
+    grid.beginDraw();
+
+    grid.fill(hexBG);
+    grid.rect(0, 0, cardWidth, cardHeight);
+
+    int yCount = 0;
+    for (float y = 0; y < cardHeight+patternHeight; y+=patternHeight*3.0/4.0) {
+        for (float x = 0; x < cardWidth+patternWidth; x+=sqrt(3.0)*patternWidth/2) {
+            float hexX = x;
+            float hexY = y;
+            if (yCount % 2 == 0) hexX -= sqrt(3.0)*patternWidth/4.0;
+            grid.image(hex, hexX, hexY);
+        }
+        yCount++;
+    }
+
+    grid.endDraw();
+    return grid;
 }
 
 // Function to draw wallpaper with cutout
 PGraphics drawWallpaper(int cardWidth, int cardHeight) {
     // Pattern parameters
-    int patternWidth = 45;
-    int patternHeight = 45;
-    int numPatternsX = int(27/2.5);
-    int numPatternsY = int(43/2.5);
+    int patternWidth = 90;
+    int patternHeight = 90;
+    int numPatternsX = int(27/2.95);
+    int numPatternsY = int(43/3.35);
 
     // Pattern randomize parameters
     float petalWidthMean = random(0.15, 0.25);
@@ -74,18 +85,16 @@ PGraphics drawWallpaper(int cardWidth, int cardHeight) {
     float petalHeightOffsetMean = random(0.1, 0.2);
     float petalHeightOffsetVariance = 0.05;
 
-    float dividerVertexMean = random(0.7, 0.8);
+    float dividerVertexMean = random(0.3, 0.5);
     float dividerVertexVariance = 0.05;
-    float dividerCurveoutMean = random(0.22, 0.28);
+    float dividerCurveoutMean = random(0.02, 0.18);
     float dividerCurveoutVariance = 0.02;
 
     // Cutout parameters
     float cutoutHeightLeft = random(0.1, 0.9);
     float cutoutHeightRight = random(0.1, 0.9);
-    float cutoutWidth = random(0, 30);
+    float cutoutWidth = random(10, 30);
     float flip = random(0, 1);
-
-    // Generate the patterns to be used on the wallpaper  
 
     // Generate the wallpaper
     PGraphics wallpaper = createGraphics(cardWidth, cardHeight, P2D);
@@ -261,14 +270,16 @@ PGraphics drawWallpaper(int cardWidth, int cardHeight) {
 PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
     // Generate the wallpaper
     PGraphics wallpaper = drawWallpaper(cardWidth, cardHeight);
+
+    // Generate the hex
+    PGraphics hexGrid = drawHexGrid(cardWidth, cardHeight);
     
     // Generate the final card face
     PGraphics face = createGraphics(cardWidth, cardHeight, P2D);
     face.beginDraw();
-    
-    // Draw background
-    face.fill(bgCard);
-    face.rect(0, 0, cardWidth, cardHeight);
+
+    // Blit the final hexgrid product to the card face
+    face.image(hexGrid, 0, 0);
 
     // Blit the final wallpaper product to the card face
     face.image(wallpaper, 0, 0);
@@ -283,7 +294,7 @@ void setup() {
 
     drawCard(bg, "P E E L I N G");
 
-    //saveFrame("output.png");
+    saveFrame("output.png");
 }
 
 // Template function for drawing cards
