@@ -72,6 +72,7 @@ boolean dropCircuit(
 
     // Draw the starting circle
     face.ellipse(deltaX*startX, deltaY*startY, circleSize, circleSize);
+    filledTable[startX][startY] = true;
 
     return true;
 }
