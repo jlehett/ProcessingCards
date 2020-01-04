@@ -32,7 +32,7 @@ boolean dropCircuit(
         int prevY = y;
 
         if (random(0, 1) < endChance) {
-            face.ellipse(deltaX*x, deltaY*startY, circleSize, circleSize);
+            face.ellipse(deltaX*x, deltaY*y, circleSize, circleSize);
             filledTable[x][y] = true;
             break;
         }
@@ -87,6 +87,7 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
     // Generate the final card face
     PGraphics face = createGraphics(cardWidth, cardHeight, P2D);
     face.beginDraw();
+    face.smooth(8);
 
     face.fill(bg);
     face.rect(0, 0, cardWidth, cardHeight);
