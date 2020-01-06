@@ -1,7 +1,9 @@
 // Parameters
-color bg = #0c090d;
-color wireColor1 = #53b3cb;
-color wireColor2 = #f9c22e;
+color wireBG = #191919;
+color wireColor1 = #554e6f;
+color wireColor2 = #ffffff;
+color wireColor3 = #e65a3d;
+color bg = wireBG;
 
 // Function for creating a new circuit. Return true if circuit was drawn,
 // return false otherwise.
@@ -12,13 +14,19 @@ boolean dropCircuit(
                                     ) {
     // Circuit parameters
     float turnChance = 0.2;
-    float leftChance = 0.5;
+    float leftChance = 0.25;
     float endChance = 0.05;
-    float color2Chance = 0.25;
+    float color2Chance = 0.35;
+    float color3Chance = 0.15;
+    float offsetX = 5.0;
+    float offsetY = 5.0;
 
     // Set the colors
-    face.fill(bg);
-    if (random(0, 1) < color2Chance) face.stroke(wireColor2);
+    face.fill(wireBG);
+    if (random(0, 1) < color2Chance) {
+        if (random(0, 1) < color3Chance) face.stroke(wireColor3);
+        else face.stroke(wireColor2);
+    }
     else face.stroke(wireColor1);
     face.strokeWeight(strokeSize);
     // If the current starting space is already filled, return false
@@ -32,7 +40,7 @@ boolean dropCircuit(
         int prevY = y;
 
         if (random(0, 1) < endChance) {
-            face.ellipse(deltaX*x, deltaY*y, circleSize, circleSize);
+            face.ellipse(deltaX*x+offsetX, deltaY*y+offsetY, circleSize, circleSize);
             filledTable[x][y] = true;
             break;
         }
@@ -41,14 +49,14 @@ boolean dropCircuit(
             if (random(0, 1) < leftChance) {
                 x -= 1;
                 if (prevX-1 >= 0 && filledTable[prevX-1][prevY] && prevY+1 < numRows && filledTable[prevX][prevY+1]) {
-                    face.ellipse(deltaX*prevX, deltaY*prevY, circleSize, circleSize);
+                    if (startX != x || startY != y) face.ellipse(deltaX*prevX+offsetX, deltaY*prevY+offsetY, circleSize, circleSize);
                     break;
                 }
             }
             else {
                 x += 1;
                 if (prevX+1 < numCols && filledTable[prevX+1][prevY] && prevY+1 < numRows && filledTable[prevX][prevY+1]) {
-                    face.ellipse(deltaX*prevX, deltaY*prevY, circleSize, circleSize);
+                    if (startX != x || startY != y) face.ellipse(deltaX*prevX+offsetX, deltaY*prevY+offsetY, circleSize, circleSize);
                     break;
                 }
             }
@@ -60,19 +68,21 @@ boolean dropCircuit(
         }
 
         if (filledTable[x][y]) {
-            face.ellipse(deltaX*prevX, deltaY*prevY, circleSize, circleSize);
+            face.ellipse(deltaX*prevX+offsetX, deltaY*prevY+offsetY, circleSize, circleSize);
             break;
         }
 
         if (filledTable[x][y]) break;
-        face.line(prevX*deltaX, prevY*deltaY, x*deltaX, y*deltaY);
+        face.line(prevX*deltaX+offsetX, prevY*deltaY+offsetY, x*deltaX+offsetX, y*deltaY+offsetY);
         filledTable[x][y] = true;
         filledTable[prevX][prevY] = true;
     }
 
     // Draw the starting circle
-    face.ellipse(deltaX*startX, deltaY*startY, circleSize, circleSize);
-    filledTable[startX][startY] = true;
+    if (startX != x || startY != y) { 
+        face.ellipse(deltaX*startX+offsetX, deltaY*startY+offsetY, circleSize, circleSize);
+        filledTable[startX][startY] = true;
+    }
 
     return true;
 }
@@ -80,31 +90,34 @@ boolean dropCircuit(
 // Template function for drawing
 PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
     // Circuit parameters
-    int numCols = 10;
-    int numRows = 20;
-    int circleSize = 20;
-    int strokeSize = 7;
+    int numCols = int(15*4.0);
+    int numRows = int(25*4.0);
+    int circleSize = 5;
+    int strokeSize = 1;
+    int numCircuitsDropped = 800;
+
+    int tableOffset = 10;
     
     // Generate the final card face
     PGraphics face = createGraphics(cardWidth, cardHeight, P2D);
-    face.beginDraw();
     face.smooth(8);
+    face.beginDraw();
 
-    face.fill(bg);
+    face.fill(wireBG);
     face.rect(0, 0, cardWidth, cardHeight);
 
     // Create table that tells if a circuit has already been placed
-    boolean filledTable[][] = new boolean[numCols][numRows];
+    boolean filledTable[][] = new boolean[numCols+tableOffset][numRows+tableOffset];
 
     // Find out the spacing based on the number of rows and columns
     float deltaX = cardWidth / numCols;
     float deltaY = cardHeight / numRows;
 
     // Create circuits
-    for (int i = 0; i < 200; i++) {
+    for (int i = 0; i < numCircuitsDropped; i++) {
         dropCircuit(
-            numCols, numRows,
-            int(random(0, numCols)), int(random(0, numRows)),
+            numCols+tableOffset, numRows+tableOffset,
+            int(random(0, numCols+tableOffset)), int(random(0, numRows+tableOffset)),
             deltaX, deltaY, filledTable,
             circleSize, strokeSize, face
         );
@@ -120,7 +133,7 @@ void setup() {
 
     drawCard(bg, "C I R C U I T S");
 
-    //saveFrame("output.png");
+    saveFrame("output.png");
 }
 
 // Template function for drawing cards
@@ -196,4 +209,17 @@ void drawCard(color bg, String cardName) {
 // This is probably going to be very minimal, most code should go in
 // setup unless we are animating.
 void draw() { 
+}
+
+
+void keyPressed() {
+    wireBG = color(random(0, 255), random(0, 255), random(0, 255));
+    wireColor1 = color(random(0, 255), random(0, 255), random(0, 255));
+    wireColor2 = color(random(0, 255), random(0, 255), random(0, 255));
+    wireColor3 = color(random(0, 255), random(0, 255), random(0, 255));
+    bg = wireBG;
+
+    drawCard(bg, "C I R C U I T S");
+
+    saveFrame("output.png");
 }
