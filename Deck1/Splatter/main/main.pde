@@ -1,10 +1,22 @@
 
-color bg = #01200f;
-color cardBG = #01200f;
-color c1 = #9ec5ab;
-color c2 = #32746d;
-color c3 = #104f55;
-color c4 = #32746d;
+color[] palette = {#011936, #465362, #ed254e, #f9dc5c, #f4fffd};
+
+/*
+color bg = palette[round(random(0, 4))];
+color cardBG = palette[round(random(0, 4))];
+color c1 = palette[round(random(0, 4))];
+color c2 = palette[round(random(0, 4))];
+color c3 = palette[round(random(0, 4))];
+color c4 = palette[round(random(0, 4))];
+*/
+
+color bg = palette[0];
+color cardBG = palette[0];
+color c1 = palette[4];
+color c2 = palette[3];
+color c3 = palette[2];
+color c4 = palette[1];
+
 
 PShader metaballShader;
 PVector[] metaballs = new PVector[5];
@@ -21,8 +33,8 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
     // Parameters
     int numClusters = 10;
     float clusterVariance = 50.0;
-    float minClusterRadius = 10.0/800000;
-    float maxClusterRadius = 40.0/800000;
+    float minClusterRadius = 10.0/800000*1.5;
+    float maxClusterRadius = 20.0/800000*1.5;
     float minBigRadius = 0.0000002 * cardWidth;
     float maxBigRadius = 0.0000003 * cardWidth;
     
@@ -126,7 +138,7 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
 
 // Setup canvas and draw the card
 void setup() {
-    size(1000, 1000, P2D);
+    size(1200, 1200, P2D);
 
     loadShaders();
 
