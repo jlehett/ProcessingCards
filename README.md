@@ -1,3 +1,3 @@
 # Processing Cards
 
-Creating a deck of cards using Processing.
+Creating a deck of generative art cards using Processing.
