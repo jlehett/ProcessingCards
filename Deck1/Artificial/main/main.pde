@@ -1,5 +1,12 @@
+import ch.bildspur.postfx.builder.*;
+import ch.bildspur.postfx.pass.*;
+import ch.bildspur.postfx.*;
+
 color cardBG = #121420;
 color bg = cardBG;
+
+PostFXSupervisor supervisor;
+BloomPass bloomPass;
 
 // Function to create the tiles
 PGraphics[] createTiles(int tileSizeX, int tileSizeY) {
@@ -38,10 +45,13 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
     face.noStroke();
 
     // Parameters
-    int tileSizeX = 40;
-    int tileSizeY = 40;
-    int xOffset = 10;
-    int yOffset = 10;
+    int tileSizeX = 30;
+    int tileSizeY = 30;
+    
+    float misTileChance = 0.25;
+
+    int numY = 20;
+    int numX = round(numY/3.5*2.2);
 
     // Draw background
     face.fill(cardBG);
@@ -52,21 +62,42 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
     PGraphics[] tiles = createTiles(tileSizeX, tileSizeY);
 
     face.beginDraw();
+    face.imageMode(CENTER);
 
-    for (float x = 0; x < cardWidth; x+=tileSizeX) {
-        for (float y = 0; y < cardHeight; y+=tileSizeY) {
-            int index = round(random(0, 1));
-            face.image(tiles[index], x, y);
+    int preferredIndex, otherIndex;
+
+    for (float x = 0; x < numX; x++) {
+        for (float y = 0; y < numY; y++) {
+            
+            if ((x + y) % 2 == 0) {
+                preferredIndex = 0;
+                otherIndex = 1;
+            } else {
+                preferredIndex = 1;
+                otherIndex = 0;
+            }
+            
+            int index;
+            if (random(0, 1) < misTileChance) index = otherIndex;
+            else index = preferredIndex;
+
+            float coordX = map(x, 0, numX-1, tileSizeX, cardWidth-tileSizeX);
+            float coordY = map(y, 0, numY-1, tileSizeY, cardHeight-tileSizeY);
+            face.image(tiles[index], coordX, coordY);
         }
     }
 
     face.endDraw();
+
     return face;
 }
 
 // Setup canvas and draw the card
 void setup() {
-    size(1200, 1200, P2D);
+    size(1000, 1000, P2D);
+
+    supervisor = new PostFXSupervisor(this);
+    bloomPass = new BloomPass(this, 0.01, 15, 500000);
 
     drawCard(bg, "A R T I F I C I A L");
 
@@ -130,8 +161,16 @@ void drawCard(color bg, String cardName) {
         cardRoundedness + 20
     );
     // Draw the card's generated face
-    imageMode(CENTER);
-    image(cardFace, width/2, height/2);
+    //imageMode(CENTER);
+    //image(cardFace, width/2, height/2);
+    pushMatrix();
+    translate(width/2-cardWidth/2, height/2-cardHeight/2);
+    blendMode(SCREEN);
+    supervisor.render(cardFace);
+    supervisor.pass(bloomPass);
+    supervisor.compose();
+    blendMode(BLEND);
+    popMatrix();
     // Draw the card's outline
     stroke(255, 255, 255);
     strokeWeight(cardOutline);
@@ -147,4 +186,3 @@ void drawCard(color bg, String cardName) {
 // setup unless we are animating.
 void draw() { 
 }
-
