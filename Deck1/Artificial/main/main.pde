@@ -2,11 +2,13 @@ import ch.bildspur.postfx.builder.*;
 import ch.bildspur.postfx.pass.*;
 import ch.bildspur.postfx.*;
 
-color cardBG = #121420;
+color cardBG = #1b1916;
 color bg = cardBG;
 
 PostFXSupervisor supervisor;
 BloomPass bloomPass;
+BlurPass blurPass;
+ColorPass colorPass;
 
 // Function to create the tiles
 PGraphics[] createTiles(int tileSizeX, int tileSizeY) {
@@ -16,6 +18,7 @@ PGraphics[] createTiles(int tileSizeX, int tileSizeY) {
     tile1.smooth(8);
     tile1.beginDraw();
     tile1.noStroke();
+    tile1.fill(#ffffff);
     tile1.translate(tileSizeX / 2.0, tileSizeY / 2.0);
     tile1.rotate(PI/4.0);
     tile1.rectMode(CENTER);
@@ -26,6 +29,7 @@ PGraphics[] createTiles(int tileSizeX, int tileSizeY) {
     tile2.smooth(8);
     tile2.beginDraw();
     tile2.noStroke();
+    tile2.fill(#ffffff);
     tile2.translate(tileSizeX / 2.0, tileSizeY / 2.0);
     tile2.rotate(-PI/4.0);
     tile2.rectMode(CENTER);
@@ -41,27 +45,22 @@ PGraphics[] createTiles(int tileSizeX, int tileSizeY) {
 PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
     PGraphics face = createGraphics(cardWidth, cardHeight, P2D);
     face.smooth(8);
-    face.beginDraw();
-    face.noStroke();
 
     // Parameters
-    int tileSizeX = 30;
-    int tileSizeY = 30;
+    int tileSizeX = 15;
+    int tileSizeY = 15;
     
-    float misTileChance = 0.25;
+    float misTileChance = 0.1;
 
-    int numY = 20;
+    int numY = 44;
     int numX = round(numY/3.5*2.2);
-
-    // Draw background
-    face.fill(cardBG);
-    face.rect(0, 0, cardWidth, cardHeight);
-    face.endDraw();
 
     // Create the tiles to choose from
     PGraphics[] tiles = createTiles(tileSizeX, tileSizeY);
 
     face.beginDraw();
+    face.noStroke();
+
     face.imageMode(CENTER);
 
     int preferredIndex, otherIndex;
@@ -89,15 +88,28 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
 
     face.endDraw();
 
-    return face;
+    PGraphics fin = createGraphics(cardWidth, cardHeight, P2D);
+
+    blendMode(BLEND);
+    image(face, width, height);
+    blendMode(BLEND);
+    supervisor.render(face);
+    colorPass.setUniforms(width, height);
+    supervisor.pass(bloomPass);
+    supervisor.pass(colorPass);
+    supervisor.compose(fin);
+    blendMode(BLEND);
+
+    return fin;
 }
 
 // Setup canvas and draw the card
 void setup() {
-    size(1000, 1000, P2D);
+    size(1200, 1200, P2D);
 
     supervisor = new PostFXSupervisor(this);
     bloomPass = new BloomPass(this, 0.01, 15, 500000);
+    colorPass = new ColorPass();
 
     drawCard(bg, "A R T I F I C I A L");
 
@@ -149,7 +161,6 @@ void drawCard(color bg, String cardName) {
     
     titleImage.endDraw();
 
-    image(titleImage, 0, 0);
     // Draw the card's silhouette with appropriate scaling and shadow
     // strength
     rectMode(CENTER);
@@ -161,15 +172,12 @@ void drawCard(color bg, String cardName) {
         cardRoundedness + 20
     );
     // Draw the card's generated face
-    //imageMode(CENTER);
-    //image(cardFace, width/2, height/2);
     pushMatrix();
     translate(width/2-cardWidth/2, height/2-cardHeight/2);
-    blendMode(SCREEN);
-    supervisor.render(cardFace);
-    supervisor.pass(bloomPass);
-    supervisor.compose();
-    blendMode(BLEND);
+    fill(bg);
+    rect(0, 0, cardWidth*2, cardHeight*2);
+    image(cardFace, 0, 0);
+    
     popMatrix();
     // Draw the card's outline
     stroke(255, 255, 255);
@@ -180,6 +188,8 @@ void drawCard(color bg, String cardName) {
         cardWidth+cardOutline-2, cardHeight+cardOutline-2,
         cardRoundedness
     );
+
+    image(titleImage, 0, 0);
 }
 
 // This is probably going to be very minimal, most code should go in
