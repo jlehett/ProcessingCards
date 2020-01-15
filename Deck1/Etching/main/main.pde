@@ -1,8 +1,10 @@
 color cardBG = #252323;
 color bg = #a99985;
+color darkBG = #201d1d;
+color lightBG = #2a2828;
 color etchColor = #dad2bc;
 color etchColor2 = #70798c;
-color circleColor = #a99985;
+color etchColor3 = #ed6a5a;
 
 void etchLine(
     PGraphics canvas, float stretchError, float varianceError,
@@ -54,11 +56,14 @@ void etchPattern(
     PVector gridMin, PVector gridMax, int cardWidth, int cardHeight
     ) {
 
-    if (random(0, 1) < 0.15) c = etchColor2;
+    if (random(0, 1) < 0.15) {
+        if (random(0, 1) < 0.15) c = etchColor3;
+        else c = etchColor2;
+    }
     else c = etchColor;
 
     for (int i = 0; i < pattern.length; i++) {
-        for (int j = 0; j < 7; j++) {
+        for (int j = 0; j < 10; j++) {
             etchLine(
                 canvas, stretchError, varianceError,
                 map(pattern[i][0], 0.0, 1.0, gridMin.x*cardWidth, gridMax.x*cardWidth),
@@ -88,8 +93,8 @@ void writeHieroglyphs(
             ];
 
             PVector gridMin = new PVector(
-                map(x, 0, numSymbolsX-1, symbolSizeXRatio, 1.0-symbolSizeXRatio*2),
-                map(y, 0, numSymbolsY-1, symbolSizeYRatio, 1.0-symbolSizeYRatio*2)
+                map(x, 0, numSymbolsX-1, symbolSizeXRatio*0.75, 1.0-symbolSizeXRatio*0.75-symbolSizeXRatio),
+                map(y, 0, numSymbolsY-1, symbolSizeYRatio*0.75, 1.0-symbolSizeYRatio*0.75-symbolSizeYRatio)
             );
             PVector gridMax = new PVector(
                 gridMin.x + symbolSizeXRatio,
@@ -113,12 +118,12 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
 
     // Parameters
     float strokeSize = 1;
-    float stretchError = 0.025;
-    float varianceError = 0.025;
-    int numSymbolsX = 10;
-    int numSymbolsY = 10;
-    int symbolSizeX = 40;
-    int symbolSizeY = 40;
+    float stretchError = 0.06;
+    float varianceError = 0.035;
+    int numSymbolsX = 9;
+    int numSymbolsY = 9;
+    int symbolSizeX = 50;
+    int symbolSizeY = 50;
 
     // Draw background
     face.fill(cardBG);
@@ -360,8 +365,196 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
             {0.35, 0.45, 0.5, 0.3},
             {0.5, 0.3, 0.65, 0.45},
             {0.65, 0.45, 0.5, 0.6}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.3, 0.9, 0.7, 0.9}
+        },
+        {
+            {0.2, 0.4, 0.5, 0.1},
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.9, 0.8, 0.6},
+            {0.5, 0.4, 0.8, 0.4}
+        },
+        {
+            {0.2, 0.1, 0.2, 0.9},
+            {0.2, 0.5, 0.8, 0.2},
+            {0.2, 0.7, 0.8, 0.4},
+            {0.8, 0.1, 0.8, 0.9}
+        },
+        {
+            {0.2, 0.1, 0.2, 0.9},
+            {0.2, 0.9, 0.8, 0.5},
+            {0.8, 0.1, 0.8, 0.9},
+            {0.8, 0.9, 0.2, 0.5}
+        },
+        {
+            {0.2, 0.4, 0.5, 0.1},
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.9, 0.8, 0.9},
+            {0.8, 0.9, 0.8, 0.1},
+            {0.5, 0.7, 0.8, 0.7}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.7, 0.3, 0.5},
+            {0.3, 0.5, 0.5, 0.3},
+            {0.5, 0.3, 0.7, 0.5},
+            {0.7, 0.5, 0.5, 0.7}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.8, 0.2, 0.5},
+            {0.2, 0.5, 0.5, 0.2},
+            {0.5, 0.2, 0.8, 0.5},
+            {0.8, 0.5, 0.5, 0.8}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.7, 0.3, 0.75},
+            {0.3, 0.75, 0.2, 0.9},
+            {0.5, 0.7, 0.7, 0.75},
+            {0.7, 0.75, 0.8, 0.9}
+        },
+        {
+            {0.8, 0.9, 0.2, 0.7},
+            {0.2, 0.7, 0.8, 0.5},
+            {0.8, 0.5, 0.2, 0.3},
+            {0.2, 0.3, 0.8, 0.1}
+        },
+        {
+            {0.2, 0.1, 0.2, 0.9},
+            {0.2, 0.9, 0.6, 0.7},
+            {0.6, 0.7, 0.2, 0.5},
+            {0.2, 0.5, 0.8, 0.3},
+            {0.8, 0.3, 0.2, 0.1}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.1, 0.2, 0.4},
+            {0.5, 0.1, 0.8, 0.4}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.3, 0.8, 0.5, 0.9},
+            {0.7, 0.2, 0.5, 0.1}
+        },
+        {
+            {0.2, 0.1, 0.2, 0.9},
+            {0.2, 0.7, 0.5, 0.5},
+            {0.2, 0.3, 0.5, 0.5}
+        },
+        {
+            {0.2, 0.9, 0.3, 0.5},
+            {0.7, 0.7, 0.3, 0.5},
+            {0.8, 0.1, 0.7, 0.7}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.9, 0.2, 0.6},
+            {0.5, 0.9, 0.8, 0.6}
+        },
+        {
+            {0.2, 0.1, 0.2, 0.9},
+            {0.2, 0.7, 0.7, 0.9}
+        },
+        {
+            {0.3, 0.9, 0.7, 0.9},
+            {0.7, 0.9, 0.8, 0.4},
+            {0.8, 0.4, 0.2, 0.4},
+            {0.2, 0.4, 0.3, 0.9},
+            {0.2, 0.1, 0.2, 0.4},
+            {0.5, 0.1, 0.5, 0.4},
+            {0.8, 0.1, 0.8, 0.4}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.3, 0.3, 0.1},
+            {0.5, 0.3, 0.7, 0.1}
+        },
+        {
+            {0.2, 0.1, 0.2, 0.9},
+            {0.8, 0.1, 0.8, 0.9},
+            {0.2, 0.8, 0.8, 0.6},
+            {0.2, 0.6, 0.8, 0.4},
+            {0.2, 0.4, 0.8, 0.2}
+        },
+        {
+            {0.5, 0.4, 0.5, 0.1},
+            {0.5, 0.4, 0.3, 0.6},
+            {0.3, 0.4, 0.5, 0.6},
+            {0.5, 0.6, 0.5, 0.9},
+            {0.5, 0.6, 0.7, 0.4},
+            {0.5, 0.4, 0.7, 0.6}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.5, 0.2, 0.7},
+            {0.5, 0.5, 0.8, 0.7}
+        },
+        {
+            {0.4, 0.1, 0.4, 0.9},
+            {0.4, 0.9, 0.8, 0.6},
+            {0.4, 0.5, 0.2, 0.4},
+            {0.2, 0.4, 0.4, 0.3},
+            {0.4, 0.3, 0.5, 0.4},
+            {0.5, 0.4, 0.4, 0.5}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.9, 0.8, 0.7},
+            {0.5, 0.5, 0.2, 0.3}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.7, 0.3, 0.9},
+            {0.5, 0.7, 0.7, 0.9},
+            {0.5, 0.3, 0.3, 0.1},
+            {0.5, 0.3, 0.7, 0.1}
+        },
+        {
+            {0.5, 0.7, 0.3, 0.5},
+            {0.3, 0.5, 0.5, 0.3},
+            {0.5, 0.3, 0.7, 0.5},
+            {0.7, 0.5, 0.5, 0.7}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.1, 0.2, 0.25},
+            {0.5, 0.9, 0.8, 0.75},
+            {0.35, 0.5, 0.65, 0.5}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.9, 0.3, 0.7},
+            {0.3, 0.7, 0.1, 0.9},
+            {0.5, 0.9, 0.7, 0.7},
+            {0.7, 0.7, 0.9, 0.9}
+        },
+        {
+            {0.5, 0.1, 0.5, 0.9},
+            {0.5, 0.1, 0.2, 0.3},
+            {0.5, 0.1, 0.8, 0.3},
+            {0.5, 0.9, 0.2, 0.7},
+            {0.5, 0.9, 0.8, 0.7}
+        },
+        {
+            {0.2, 0.1, 0.2, 0.9},
+            {0.8, 0.1, 0.8, 0.9},
+            {0.2, 0.6, 0.8, 0.4}
+        },
+        {
+            {0.2, 0.1, 0.2, 0.9},
+            {0.2, 0.1, 0.8, 0.9},
+            {0.8, 0.9, 0.8, 0.1}
         }
     };
+
+    face.stroke(lightBG);
+    face.strokeWeight(10);
+    face.fill(darkBG);
+    face.ellipse(cardWidth/2, cardHeight/2, 500, 500);
+    
 
     writeHieroglyphs(
         face, stretchError, varianceError, patterns, etchColor, strokeSize,
@@ -374,7 +567,7 @@ PGraphics drawSpecificCard(int cardWidth, int cardHeight) {
 
 // Setup canvas and draw the card
 void setup() {
-    size(1000, 1000, P2D);
+    size(1200, 1200, P2D);
 
     drawCard(bg, "E T C H I N G");
 
