@@ -1,7 +1,7 @@
-color cardBG = #e0e2db;
-color bg = #191716;
-color etchColor2 = #016fb9;
-color etchColor3 = #ec4e20;
+color cardBG = #f2d492;
+color bg = #202c39;
+color etchColor2 = #f29559;
+color etchColor3 = #283845;
 
 color darkBG;
 color lightBG;
